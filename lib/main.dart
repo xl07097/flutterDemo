@@ -1,142 +1,247 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
 
-void main() => runApp(new MyApp());
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
-      title: 'Startup Name Generator',
-      theme: new ThemeData(
-        primaryColor: Colors.white,
+void main() => runApp(new MaterialApp(
+  title: 'my app',
+  home:new TodosScreen(
+    todos: new List.generate(
+      20,
+          (i) => new Todo(
+        'Todo $i',
+        'A description of what needs to be done for Todo $i',
       ),
-      home: new RandomWords(),
-    );
-  }
+    ),
+  ),
+));
 
-//  Widget build(BuildContext context) {
-//    final wordPair = new WordPair.random();
-//    return new MaterialApp(
-//      title: 'Welcome to Flutter',
-//      home: new Scaffold(
-//        appBar: new AppBar(
-//          title: new Text('Welcome to Flutter'),
-//        ),
-//        body: new Center(
-//          child: new RandomWords(),
-////          child: new Text(wordPair.asPascalCase),
-//        ),
-//      ),
-//    );
-//  }
+
+class Todo {
+  final String title;
+  final String description;
+
+  Todo(this.title, this.description);
 }
 
-class RandomWordsState extends State<RandomWords> {
-  final _suggestions = <WordPair>[];
+class TodosScreen extends StatelessWidget {
+  final List<Todo> todos;
 
-  final _saved = new Set<WordPair>();
+  TodosScreen({Key key, @required this.todos}) : super(key: key);
 
-  final _biggerFont = const TextStyle(fontSize: 18.0);
-
-  Widget _buildSuggestions() {
-    return new ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        // 对于每个建议的单词对都会调用一次itemBuilder，然后将单词对添加到ListTile行中
-        // 在偶数行，该函数会为单词对添加一个ListTile row.
-        // 在奇数行，该函数会添加一个分割线widget，来分隔相邻的词对。
-        // 注意，在小屏幕上，分割线看起来可能比较吃力。
-        itemBuilder: (context, i) {
-          // 在每一列之前，添加一个1像素高的分隔线widget
-          if (i.isOdd) return new Divider();
-
-          // 语法 "i ~/ 2" 表示i除以2，但返回值是整形（向下取整），比如i为：1, 2, 3, 4, 5
-          // 时，结果为0, 1, 1, 2, 2， 这可以计算出ListView中减去分隔线后的实际单词对数量
-          final index = i ~/ 2;
-          // 如果是建议列表中最后一个单词对
-          if (index >= _suggestions.length) {
-            // ...接着再生成10个单词对，然后添加到建议列表
-            _suggestions.addAll(generateWordPairs().take(10));
-          }
-          return _buildRow(_suggestions[index]);
-        }
-    );
-  }
-
-  Widget _buildRow(WordPair pair) {
-    final alreadySaved = _saved.contains(pair);
-
-    return new ListTile(
-      title: new Text(
-        pair.asPascalCase,
-        style: _biggerFont,
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('Todos'),
       ),
-      trailing: new Icon(
-        alreadySaved ? Icons.favorite : Icons.favorite_border,
-        color: alreadySaved ? Colors.red : null,
-      ),
-      onTap: () {
-        setState(() {
-          if (alreadySaved) {
-            _saved.remove(pair);
-          } else {
-            _saved.add(pair);
-          }
-        });
-      },
-    );
-  }
-
-  void _pushSaved() {
-    Navigator.of(context).push(
-      new MaterialPageRoute(
-        builder: (context) {
-          final tiles = _saved.map(
-                (pair) {
-              return new ListTile(
-                title: new Text(
-                  pair.asPascalCase,
-                  style: _biggerFont,
+      body: new ListView.builder(
+        itemCount: todos.length,
+        itemBuilder: (context, index) {
+          return new ListTile(
+            title: new Text(todos[index].title),
+            // When a user taps on the ListTile, navigate to the DetailScreen.
+            // Notice that we're not only creating a new DetailScreen, we're
+            // also passing the current todo through to it!
+            onTap: () {
+              Navigator.push(
+                context,
+                new MaterialPageRoute(
+                  builder: (context) => new DetailScreen(todo: todos[index]),
                 ),
               );
             },
-          );
-          final divided = ListTile
-              .divideTiles(
-            context: context,
-            tiles: tiles,
-          )
-              .toList();
-          return new Scaffold(
-            appBar: new AppBar(
-              title: new Text('Saved Suggestions'),
-            ),
-            body: new ListView(children: divided),
           );
         },
       ),
     );
   }
+}
+
+class DetailScreen extends StatelessWidget {
+  // Declare a field that holds the Todo
+  final Todo todo;
+
+  // In the constructor, require a Todo
+  DetailScreen({Key key, @required this.todo}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-//    final wordPair = new WordPair.random();
-//    return new Text(wordPair.asPascalCase);
-    return new Scaffold (
+    // Use the Todo to create our UI
+    return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Startup Name Generator'),
-        actions: <Widget>[
-          new IconButton(icon: new Icon(Icons.list), onPressed: _pushSaved),
-        ],
+        title: new Text("${todo.title}"),
       ),
-      body: _buildSuggestions(),
+      body: new Padding(
+        padding: new EdgeInsets.all(16.0),
+        child: new Text('${todo.description}'),
+      ),
     );
   }
 }
 
-class RandomWords extends StatefulWidget {
+
+class TutorialHome extends StatelessWidget{
   @override
-  createState() => new RandomWordsState();
+  Widget build(BuildContext context) {
+    // TODO: implement build
+
+    return new Scaffold(
+      appBar: new AppBar(
+        leading: new IconButton(
+            icon: new Icon(Icons.menu),
+            tooltip: 'navigation menu',
+            onPressed: null
+        ),
+        title: new Text('example title'),
+        actions: <Widget>[
+          new IconButton(
+              icon: new Icon(Icons.search),
+              tooltip: 'search',
+              onPressed: null
+          )
+        ],
+      ),
+      body: new Center(
+        child: new Text('hello world12'),
+      ),
+      floatingActionButton: new FloatingActionButton(
+        tooltip: 'Add',
+        child: new Icon(Icons.add),
+        onPressed: null,
+      )
+    );
+  }
 }
+
+class MyButton extends StatelessWidget{
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return new GestureDetector(
+      onTap: (){
+        print("Mybutton was tapper");
+      },
+      child: new Container(
+        height:36.0,
+        padding: const EdgeInsets.all(8.0),
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        decoration: new BoxDecoration(
+          borderRadius: new BorderRadius.circular(5.0),
+          color: Colors.lightGreen[500]
+        ),
+        child: new Center(
+          child: new Text("engage"),
+        ),
+      ),
+    );
+  }
+}
+
+class FirstScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('First Screen'),
+      ),
+      body: new Center(
+        child: new RaisedButton(
+          child: new Text('Launch new screen'),
+          onPressed: () {
+            Navigator.push(
+              context,
+              new MaterialPageRoute(builder: (context) => new SecondScreen()),
+            );
+            // Navigate to second screen when tapped!
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class SecondScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text("Second Screen"),
+      ),
+      body: new Center(
+        child: new RaisedButton(
+          onPressed: () {
+            Navigator.pop(context);
+            // Navigate back to first screen when tapped!
+          },
+          child: new Text('Go back!'),
+        ),
+      ),
+    );
+  }
+}
+
+
+class MyScaffold extends StatelessWidget{
+  @override
+  Widget build(BuildContext ctx){
+    return new Material(
+      child: new Column(
+        children: <Widget>[
+          new MyAppBar(
+              title: new Text(
+                'title',
+                style: Theme.of(ctx).primaryTextTheme.title,
+              )
+          ),
+          new Expanded(child: new Center(
+            child: new Text('hello world'),
+          ))
+        ],
+      ),
+    );
+  }
+}
+
+
+class MyAppBar extends StatelessWidget{
+  MyAppBar({this.title});
+  final Widget title;
+  @override
+  Widget build(BuildContext context) {
+    return new Container(
+      height: 56.0,
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      decoration: new BoxDecoration(color: Colors.blue[500]),
+      child: new Row(
+        children: <Widget>[
+          new IconButton(
+            icon: new Icon(Icons.menu),
+            tooltip: "Navigation menu",
+            onPressed: null,
+          ),
+          new Expanded(child: title),
+          new IconButton(
+              icon: new Icon(Icons.search),
+              tooltip: "search",
+              onPressed: null
+          )
+        ],
+      ),
+    );
+  }
+}
+
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new Center(
+      child: new Text(
+        "Hello world!",
+        textDirection: TextDirection.ltr,
+      )
+    );
+  }
+}
+
 
 
