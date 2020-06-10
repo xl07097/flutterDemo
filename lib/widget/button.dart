@@ -8,7 +8,9 @@ class MyButton extends StatelessWidget{
       appBar: AppBar(
         title: new Text("AnimButtonDemoPage"),
       ),
-      body: new Text("hhahaha")
+      body: new Center(
+        child: new Text("hhahaha")
+      ) 
     );
   }
 
