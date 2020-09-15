@@ -25,7 +25,7 @@ class Todo {
 class TodosScreen extends StatelessWidget {
   final List<Todo> todos;
 
-  TodosScreen({Key key, @required this.todos}) : super(key: key);
+  TodosScreen({Key key, this.todos}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,7 @@ class DetailScreen extends StatelessWidget {
   final Todo todo;
 
   // In the constructor, require a Todo
-  DetailScreen({Key key, @required this.todo}) : super(key: key);
+  DetailScreen({Key key, this.todo}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
